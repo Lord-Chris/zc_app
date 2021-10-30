@@ -5,8 +5,8 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:zurichat/app/app.locator.dart';
 import 'package:zurichat/app/app.router.dart';
 import 'package:zurichat/models/organization_model.dart';
-import 'package:zurichat/repository/repository.dart';
 import 'package:zurichat/services/app_services/media_service.dart';
+import 'package:zurichat/services/in_review/organization_api_service.dart';
 import 'package:zurichat/services/in_review/user_service.dart';
 import 'package:zurichat/utilities/enums.dart';
 import 'package:zurichat/utilities/mixins/validators_mixin.dart';
@@ -19,7 +19,8 @@ class OrganizationSettingsViewModel extends BaseViewModel with ValidatorMixin {
   final dialog = locator<DialogService>();
   final _mediaService = locator<MediaService>();
   final _userService = locator<UserService>();
-  final _zuriApi = OrganizationRepo();
+  final _orgService = locator<OrganizationApiService>();
+  // final _zuriApi = OrganizationRepo();
   late String name, url;
 
   File? tempImage;
@@ -52,7 +53,7 @@ class OrganizationSettingsViewModel extends BaseViewModel with ValidatorMixin {
     try {
       setBusy(true);
       if (tempImage == null) return;
-      final res = await _zuriApi.updateOrgLogo(orgId, tempImage!, token);
+      final res = await _orgService.updateOrgLogo(orgId, tempImage!);
       setBusy(false);
       if (res) {
         navigation.popUntil(
@@ -85,9 +86,9 @@ class OrganizationSettingsViewModel extends BaseViewModel with ValidatorMixin {
     try {
       final parsedUrl = '$orgUrl.zurichat.com';
       setBusy(true);
-      if (orgName != name) await _zuriApi.updateOrgName(orgId, orgName, token);
+      if (orgName != name) await _orgService.updateOrgName(orgId, orgName);
       if (parsedUrl != url) {
-        await _zuriApi.updateOrgUrl(orgId, parsedUrl, token);
+        await _orgService.updateOrgUrl(orgId, parsedUrl);
       }
       setBusy(false);
       navigation

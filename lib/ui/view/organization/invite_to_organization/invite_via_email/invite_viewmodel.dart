@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 
 import 'package:stacked/stacked.dart';
+import 'package:zurichat/api_request/organization_api/organization_api.dart';
 import 'package:zurichat/app/app.locator.dart';
 import 'package:zurichat/app/app.router.dart';
-import 'package:zurichat/repository/repository.dart';
 import 'package:zurichat/services/app_services/local_storage_services.dart';
 import 'package:zurichat/services/in_review/user_service.dart';
 import 'package:zurichat/utilities/mixins/validators_mixin.dart';

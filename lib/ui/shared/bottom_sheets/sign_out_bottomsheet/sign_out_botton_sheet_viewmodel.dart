@@ -1,6 +1,7 @@
 import 'package:zurichat/app/app.locator.dart';
 import 'package:zurichat/app/app.router.dart';
 import 'package:zurichat/models/organization_model.dart';
+import 'package:zurichat/services/data_services/autentication_service.dart';
 import 'package:zurichat/utilities/api_handlers/zuri_api.dart';
 import 'package:zurichat/services/app_services/connectivity_service.dart';
 import 'package:zurichat/services/app_services/local_storage_services.dart';
@@ -9,10 +10,11 @@ import 'package:zurichat/utilities/enums.dart';
 import 'package:zurichat/utilities/constants/storage_keys.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:zurichat/utilities/failures.dart';
 
 class SignOutBottomSheetViewModel extends BaseViewModel {
   final _navigator = locator<NavigationService>();
-  final _apiService = ZuriApi(coreBaseUrl);
+  final _authService = locator<AuthenticationService>();
   final _storage = locator<SharedPreferenceLocalStorage>();
   final _snackBar = locator<SnackbarService>();
   final _connectivityService = locator<ConnectivityService>();
@@ -45,7 +47,7 @@ class SignOutBottomSheetViewModel extends BaseViewModel {
 
   Future<void> signOut() async {
     bool connected = await _connectivityService.checkConnection();
-    const endpoint = "/auth/logout";
+    // const endpoint = "/auth/logout";
     if (!connected) {
       _snackBar.showCustomSnackBar(
           message: "No internet connection, connect and try again.",
@@ -54,13 +56,20 @@ class SignOutBottomSheetViewModel extends BaseViewModel {
       return;
     }
 
-    final response = await _apiService.post(endpoint, body: {}, token: token);
-
-    if (response?.statusCode == 200) {
-      _storage.clearData(StorageKeys.currentSessionToken);
-      _storage.clearData(StorageKeys.currentUserId);
-      _storage.clearData(StorageKeys.currentUserEmail);
+    // final response = await _apiService.post(endpoint, body: {}, token: token);
+    try {
+      _authService.signOut();
       navigateToSignIn();
+    } on Failure catch (e) {
+      _snackBar.showCustomSnackBar(
+        message: e.serverMessage,
+        variant: SnackbarType.failure,
+        duration: const Duration(
+          milliseconds: 1500,
+        ),
+      );
+    } catch (e) {
+      //catch other errors here so the app can flow smoothely
     }
   }
 

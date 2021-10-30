@@ -16,6 +16,7 @@ import '../services/app_services/localization_service.dart';
 import '../services/app_services/media_service.dart';
 import '../services/app_services/notification_service.dart';
 import '../services/app_services/zuri_theme_service.dart';
+import '../services/data_services/autentication_service.dart';
 import '../services/in_review/jump_to_api.dart';
 import '../services/in_review/organization_api_service.dart';
 import '../services/in_review/status_service.dart';
@@ -54,6 +55,7 @@ Future setupLocator(
   locator.registerLazySingleton(() => ChannelsApiService());
   locator.registerLazySingleton(() => JumpToApi());
   locator.registerLazySingleton(() => NotificationService());
+  locator.registerLazySingleton(() => AuthenticationService());
   final centrifugeService = await CentrifugeService.getInstance();
   locator.registerSingleton(centrifugeService);
 

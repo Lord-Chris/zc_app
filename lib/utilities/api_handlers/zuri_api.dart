@@ -351,20 +351,37 @@ class ZuriApi implements Api {
 
   @override
   Failure handleApiError(DioError e) {
-    if (e.type == DioErrorType.cancel) {
-      return InputFailure(errorMessage: e.message);
-    } else if (e.type == DioErrorType.connectTimeout) {
-      return NetworkFailure();
-    } else if (e.type == DioErrorType.receiveTimeout) {
-      return NetworkFailure();
-    } else if (e.type == DioErrorType.sendTimeout) {
-      return NetworkFailure();
-    } else if (e.type == DioErrorType.response) {
-      return ServerFailure(error: e.message);
-    } else if (e.type == DioErrorType.other) {
-      return UnknownFailure();
-    } else {
-      return UnknownFailure();
+    switch (e.type) {
+      case DioErrorType.cancel:
+        return InputFailure(
+          response: e.response,
+          error: e.message,
+        );
+      case DioErrorType.connectTimeout:
+        return NetworkFailure(
+          response: e.response,
+          error: e.message,
+        );
+      case DioErrorType.receiveTimeout:
+        return NetworkFailure(
+          response: e.response,
+          error: e.message,
+        );
+      case DioErrorType.sendTimeout:
+        return NetworkFailure(
+          response: e.response,
+          error: e.message,
+        );
+      case DioErrorType.response:
+        return ServerFailure(
+          response: e.response,
+          error: e.message,
+        );
+      default:
+        return UnknownFailure(
+          response: e.response,
+          error: e.message,
+        );
     }
   }
 

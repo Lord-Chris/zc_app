@@ -1,8 +1,10 @@
+import 'package:zurichat/services/data_services/autentication_service.dart';
 import 'package:zurichat/utilities/constants/app_strings.dart';
 import 'package:zurichat/utilities/api_handlers/zuri_api.dart';
 import 'package:zurichat/utilities/constants/app_constants.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:zurichat/utilities/failures.dart';
 import '../../../app/app.locator.dart';
 import '../../../app/app.router.dart';
 import '../../../services/app_services/local_storage_services.dart';
@@ -15,7 +17,7 @@ class SignUpViewModel extends FormViewModel {
   final storage = locator<SharedPreferenceLocalStorage>();
   final navigator = locator<NavigationService>();
   final snackbar = locator<SnackbarService>();
-  final zuriApi = ZuriApi(coreBaseUrl);
+  final _authService = locator<AuthenticationService>();
 
   String? get token => storage.getString(StorageKeys.currentSessionToken);
 
@@ -45,31 +47,46 @@ class SignUpViewModel extends FormViewModel {
     if (checkBoxValue == true) {
       loading(true);
 
-      final signUpData = {
-        'first_name': firstNameValue,
-        'last_name': lastNameValue,
-        'display_name': displayNameValue,
-        'email': emailValue,
-        'password': passwordValue,
-        'phone': phoneNumberValue,
-      };
+      //TODO: check if any value is empty
 
-      final response =
-          await zuriApi.post(signUpEndpoint, body: signUpData, token: token);
-      loading(false);
-      if (response?.statusCode == 200) {
-        snackbar.showCustomSnackBar(
-          duration: const Duration(seconds: 3),
-          variant: SnackbarType.success,
-          message: checkEmailForOTP,
+      try {
+        _authService.signUp(
+          email: emailValue ?? '',
+          password: passwordValue ?? '',
+          firstName: firstNameValue ?? '',
+          lastName: lastNameValue ?? '',
+          displayName: displayNameValue ?? '',
+          phoneNumber: phoneNumberValue ?? '',
         );
-
-        storage.setString(
-            StorageKeys.otp, response?.data['data']['verification_code']);
-        storage.setString(StorageKeys.currentUserEmail, emailValue!);
-        storage.setBool(StorageKeys.registeredNotverifiedOTP, true);
         navigateToOTPView();
+      } on Failure catch (e) {
+        snackbar.showCustomSnackBar(
+          message: e.serverMessage,
+          variant: SnackbarType.failure,
+          duration: const Duration(
+            milliseconds: 1500,
+          ),
+        );
+      } catch (e) {
+        //catch other errors here so the app can flow smoothely
       }
+      loading(false);
+
+      // final response =
+      //     await zuriApi.post(signUpEndpoint, body: signUpData, token: token);
+      // loading(false);
+      // if (response?.statusCode == 200) {
+      //   snackbar.showCustomSnackBar(
+      //     duration: const Duration(seconds: 3),
+      //     variant: SnackbarType.success,
+      //     message: checkEmailForOTP,
+      //   );
+
+      // storage.setString(
+      //     StorageKeys.otp, response?.data['data']['verification_code']);
+      // storage.setString(StorageKeys.currentUserEmail, emailValue!);
+      // storage.setBool(StorageKeys.registeredNotverifiedOTP, true);
+      // navigateToOTPView();
     } else {
       snackbar.showCustomSnackBar(
         duration: const Duration(seconds: 3),

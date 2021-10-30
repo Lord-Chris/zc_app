@@ -10,10 +10,10 @@ import 'package:zurichat/app/app.logger.dart';
 import 'package:zurichat/utilities/constants/storage_keys.dart';
 import 'package:zurichat/utilities/failures.dart';
 
-import 'i_channels_repo.dart';
+import 'i_channels_api.dart';
 
 class ChannelsRepo extends IChannelsRepo {
-  final ApiService _service = ApiService();
+  final ApiService _service = ApiService(channelsBaseUrl);
   final _log = getLogger('ChannelsRepo');
   final _storageService = locator<SharedPreferenceLocalStorage>();
 
@@ -54,9 +54,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -75,9 +72,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -95,9 +89,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -119,9 +110,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -135,9 +123,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -158,9 +143,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -179,9 +161,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -207,9 +186,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -226,9 +202,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -248,9 +221,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -284,9 +254,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -302,9 +269,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -322,9 +286,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -343,9 +304,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -364,9 +322,6 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -382,11 +337,10 @@ class ChannelsRepo extends IChannelsRepo {
     } on Failure catch (e) {
       _log.w(e.toString());
       rethrow;
-    } catch (e) {
-      _log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
+
+  Map get headers => {'Authorization': 'Bearer $token'};
 
   String? get token =>
       _storageService.getString(StorageKeys.currentSessionToken);

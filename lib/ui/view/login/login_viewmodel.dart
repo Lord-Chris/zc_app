@@ -1,10 +1,11 @@
 import 'package:zurichat/app/app.logger.dart';
-import 'package:zurichat/repository/repository.dart';
+import 'package:zurichat/services/data_services/autentication_service.dart';
 import 'package:zurichat/utilities/constants/app_strings.dart';
 import 'package:zurichat/models/user_model.dart';
 import 'package:zurichat/services/in_review/user_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:zurichat/utilities/failures.dart';
 
 import '../../../app/app.locator.dart';
 import '../../../app/app.router.dart';
@@ -21,7 +22,8 @@ class LoginViewModel extends FormViewModel {
   final _connectivityService = locator<ConnectivityService>();
   final storageService = locator<SharedPreferenceLocalStorage>();
   final _userService = locator<UserService>();
-  final zuriApi = AuthenticationRepo();
+  final _authService = locator<AuthenticationService>();
+  // final zuriApi = AuthenticationRepo();
   late UserModel userModel;
 
   final log = getLogger('LogInViewModel');
@@ -77,47 +79,29 @@ class LoginViewModel extends FormViewModel {
       );
       return;
     }
-    final response = await zuriApi.login(
-        email: emailValue!, password: passwordValue!, token: token);
 
-    loading(false);
+    try {
+      final userModel = await _authService.login(emailValue!, passwordValue!);
 
-    //saving user details to storage on request success
-    if (response?.statusCode == 200) {
-      _storageService.setString(
-        StorageKeys.currentSessionToken,
-        response?.data['data']['user']['token'],
-      );
-      _storageService.setString(
-        StorageKeys.currentUserId,
-        response?.data['data']['user']['id'],
-      );
-      _storageService.setString(
-        StorageKeys.currentUserEmail,
-        response?.data['data']['user']['email'],
-      );
-      _storageService.clearData(StorageKeys.currentOrgId);
-      final userModel = UserModel.fromJson(response?.data['data']['user']);
-      // final res = await zuriApi
-      //     .get("${coreBaseUrl}users/${response?.data['data']['user']['id']}");
-      // if (res?.statusCode == 200) {
-      //   _snackbarService.showCustomSnackBar(
-      //       message: profileUpdated, variant: SnackbarType.success);
-      _userService.setUserDetails(userModel);
-      // } else {
-      //   _snackbarService.showCustomSnackBar(
-      //       message: errorOccurred, variant: SnackbarType.failure);
-      // }
       _snackbarService.showCustomSnackBar(
         duration: const Duration(milliseconds: 1500),
         variant: SnackbarType.success,
-        message: ''' ${response?.data['message']} for'''
-            ''' ${response?.data['data']['user']['email']}''',
+        message: '''Login Succesful for ${userModel.email}''',
       );
 
       //TODO check if user has currently joined an Organization
       _navigationService.pushNamedAndRemoveUntil(Routes.organizationView);
+    } on Failure catch (e) {
+      _snackbarService.showCustomSnackBar(
+        duration: const Duration(milliseconds: 1500),
+        variant: SnackbarType.failure,
+        message: e.serverMessage,
+      );
+    } catch (e) {
+      //catch all other errors here so app can go on smoothely
     }
+
+    loading(false);
   }
 
   @override

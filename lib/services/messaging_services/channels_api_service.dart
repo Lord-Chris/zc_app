@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:zurichat/api_request/channels_api/channels_api.dart';
 import 'package:zurichat/models/channel_members.dart';
 import 'package:zurichat/models/channel_model.dart';
 import 'package:zurichat/models/pinned_message_model.dart';
-import 'package:zurichat/repository/repository.dart';
 import 'package:zurichat/utilities/enums.dart';
 import 'package:zurichat/utilities/failures.dart';
 
@@ -216,9 +216,6 @@ class ChannelsApiService {
     } on Failure catch (e) {
       log.w(e.toString());
       rethrow;
-    } catch (e) {
-      log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 
@@ -229,9 +226,6 @@ class ChannelsApiService {
     } on Failure catch (e) {
       log.w(e.toString());
       rethrow;
-    } catch (e) {
-      log.w(e.toString());
-      throw UnknownFailure(errorMessage: e.toString());
     }
   }
 

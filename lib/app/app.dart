@@ -1,3 +1,4 @@
+import 'package:zurichat/services/data_services/autentication_service.dart';
 import 'package:zurichat/services/in_review/organization_api_service.dart';
 import 'package:zurichat/services/messaging_services/centrifuge_rtc_service.dart';
 import 'package:zurichat/services/app_services/localization_service.dart';
@@ -174,6 +175,7 @@ import '../ui/view/user_search/user_search_view.dart';
     LazySingleton(classType: ChannelsApiService),
     LazySingleton(classType: JumpToApi),
     LazySingleton(classType: NotificationService),
+    LazySingleton(classType: AuthenticationService),
     Presolve(
       classType: CentrifugeService,
       presolveUsing: CentrifugeService.getInstance,

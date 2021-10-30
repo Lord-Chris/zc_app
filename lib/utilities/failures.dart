@@ -1,43 +1,62 @@
-abstract class Failure {}
+import 'package:dio/dio.dart';
+import 'package:zurichat/utilities/constants/app_strings.dart';
 
-class ServerFailure implements Failure {
+abstract class Failure {
+  final Response? response;
   final String? error;
-  ServerFailure({required this.error});
+
+  const Failure({this.error, this.response});
+
+  String get serverMessage =>
+      response!.data!['message'] ?? response!.data['error'] ?? errorOccurred;
+}
+
+class ServerFailure extends Failure {
+  ServerFailure({Response? response, String? error})
+      : super(response: response, error: error);
 
   @override
   String toString() {
-    return error!;
+    return error ?? '';
   }
 }
 
-class InputFailure implements Failure {
-  final String? errorMessage;
-  InputFailure({required this.errorMessage});
+class InputFailure extends Failure {
+  InputFailure({Response? response, String? error})
+      : super(response: response, error: error);
 
   @override
   String toString() {
-    return errorMessage!;
+    return error ?? '';
   }
 }
 
-class BadAuthFailure implements Failure {
-  final String? errorMessage;
-  BadAuthFailure({this.errorMessage});
+class BadAuthFailure extends Failure {
+  BadAuthFailure({Response? response, String? error})
+      : super(response: response, error: error);
 
   @override
   String toString() {
-    return errorMessage!;
+    return error ?? '';
   }
 }
 
-class NetworkFailure implements Failure {}
-
-class UnknownFailure implements Failure {
-  final String? errorMessage;
-  UnknownFailure({this.errorMessage});
+class NetworkFailure extends Failure {
+  NetworkFailure({Response? response, String? error})
+      : super(response: response, error: error);
 
   @override
   String toString() {
-    return errorMessage!;
+    return error ?? '';
+  }
+}
+
+class UnknownFailure extends Failure {
+  UnknownFailure({Response? response, String? error})
+      : super(response: response, error: error);
+
+  @override
+  String toString() {
+    return error ?? '';
   }
 }
